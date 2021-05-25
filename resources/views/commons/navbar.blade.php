@@ -14,7 +14,7 @@
                     {{-- 貸出予約ページへのリンク --}}
                     <li class="nav-item"><a href="#">貸出予約</a></li>
                     <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">貸出状況{{ Auth::user()->name }}</a>
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">貸出状況</a>
                         <ul class="dropdown-menu dropdown-menu-right">
                             {{-- ユーザ予約状況ページへのリンク --}}
                             <li class="dropdown-item"><a href="#">{{ Auth::user()->name }}</a></li>
@@ -25,12 +25,12 @@
                         </ul>
                     </li>
                     {{-- ログアウトへのリンク --}}
-                    <li class="dropdown-item">{!! link_to_route('logout.get', 'Logout') !!}</li>
+                    <li class="nav-item">{!! link_to_route('logout.get', 'ログアウト', [], ['class' => 'nav-link']) !!}</li>
                 @else
                     {{-- ユーザ登録ページへのリンク --}}
-                    <li class="nav-item">{!! link_to_route('signup.get', 'Signup', [], ['class' => 'nav-link']) !!}</li>
+                    <li class="nav-item">{!! link_to_route('signup.get', 'ユーザ登録', [], ['class' => 'nav-link']) !!}</li>
                     {{-- ログインページへのリンク --}}
-                    <li class="nav-item">{!! link_to_route('login', 'Login', [], ['class' => 'nav-link']) !!}</li>
+                    <li class="nav-item">{!! link_to_route('login', 'ログイン', [], ['class' => 'nav-link']) !!}</li>
                 @endif
             </ul>
         </div>
