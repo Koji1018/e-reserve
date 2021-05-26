@@ -21,3 +21,19 @@ Route::post('signup', 'Auth\RegisterController@register')->name('signup.post');
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::post('login', 'Auth\LoginController@login')->name('login.post');
 Route::get('logout', 'Auth\LoginController@logout')->name('logout.get');
+
+// 認証済なら許可
+Route::group(['middleware' => ['auth']], function () {
+    // カテゴリー一覧、追加、編集、削除
+    Route::resource('categories', 'CategoriesController', ['only' => ['index', 'edit', 'update', 'destroy']]);
+    // 備品一覧、追加、編集、削除
+    Route::resource('equipments', 'EquipmentsController', ['only' => ['index', 'edit', 'update', 'destroy']]);
+    // ユーザ一覧
+	Route::resource('users', 'UsersController', ['only' => ['index']]);
+	// 管理者一覧、追加
+	Route::resource('admin', 'AdminController', ['only' => ['index']]);
+	Route::group(['prefix' => 'admin/'], function () {
+	    Route::get('add', 'AdminController@add')->name('admin.add');
+	    Route::post('update', 'AdminController@update')->name('admin.update');
+	});
+});

@@ -24,6 +24,23 @@
                             <li class="dropdown-item"><a href="#">カテゴリー別</a></li>
                         </ul>
                     </li>
+                    {{-- 認証ユーザが管理者の場合 --}}
+                    @if (Auth::user()->user_group == 0)
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">管理機能</a>
+                            <ul class="dropdown-menu dropdown-menu-right">
+                                {{-- 備品一覧ページへのリンク --}}
+                                <li class="dropdown-item"><a href="#">備品一覧</a></li>
+                                {{-- カテゴリー一覧ページへのリンク --}}
+                                <li class="dropdown-item"><a href="#">カテゴリー一覧</a></li>
+                                <li class="dropdown-divider"></li>
+                                {{-- 管理者一覧ページへのリンク --}}
+                                <li class="dropdown-item"><li class="dropdown-item">{!! link_to_route('admin.index', '管理者一覧') !!}</li>
+                                {{-- ユーザ一覧ページへのリンク --}}
+                                <li class="dropdown-item"><li class="dropdown-item">{!! link_to_route('users.index', 'ユーザ一覧') !!}</li>
+                            </ul>
+                        </li>
+                    @endif
                     {{-- ログアウトへのリンク --}}
                     <li class="nav-item">{!! link_to_route('logout.get', 'ログアウト', [], ['class' => 'nav-link']) !!}</li>
                 @else

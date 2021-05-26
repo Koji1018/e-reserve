@@ -36,4 +36,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    
+    // このユーザが予約中の備品(多対多)(Equipmentモデルとの関係を定義)
+    public function reservations(){
+        return $this->belongsToMany(Equipment::class, 'reservations', 'user_id', 'equipment_id')->withTimestamps();
+    }
 }
