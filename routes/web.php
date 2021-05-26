@@ -25,9 +25,9 @@ Route::get('logout', 'Auth\LoginController@logout')->name('logout.get');
 // 認証済なら許可
 Route::group(['middleware' => ['auth']], function () {
     // カテゴリー一覧、追加、編集、削除
-    Route::resource('categories', 'CategoriesController', ['only' => ['index', 'edit', 'update', 'destroy']]);
+    Route::resource('categories', 'CategoriesController');
     // 備品一覧、追加、編集、削除
-    Route::resource('equipments', 'EquipmentsController', ['only' => ['index', 'edit', 'update', 'destroy']]);
+    Route::resource('equipments', 'EquipmentsController');
     // ユーザ一覧
 	Route::resource('users', 'UsersController', ['only' => ['index']]);
 	// 管理者一覧、追加

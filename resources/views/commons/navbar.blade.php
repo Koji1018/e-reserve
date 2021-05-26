@@ -30,9 +30,9 @@
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">管理機能</a>
                             <ul class="dropdown-menu dropdown-menu-right">
                                 {{-- 備品一覧ページへのリンク --}}
-                                <li class="dropdown-item"><a href="#">備品一覧</a></li>
+                                <li class="dropdown-item"><li class="dropdown-item">{!! link_to_route('equipments.index', '備品一覧') !!}</li>
                                 {{-- カテゴリー一覧ページへのリンク --}}
-                                <li class="dropdown-item"><a href="#">カテゴリー一覧</a></li>
+                                <li class="dropdown-item"><li class="dropdown-item">{!! link_to_route('categories.index', 'カテゴリー一覧') !!}</li>
                                 <li class="dropdown-divider"></li>
                                 {{-- 管理者一覧ページへのリンク --}}
                                 <li class="dropdown-item"><li class="dropdown-item">{!! link_to_route('admin.index', '管理者一覧') !!}</li>

@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Equipment extends Model
 {
+    protected $table = 'equipments';
+    
+    protected $fillable = [
+        'name', 'category_id', 'status', 
+    ];
+    
     // この備品のカテゴリー（多）(Categoryモデルとの関係を定義)
     public function category(){
         return $this->belongsTo(Category::class);

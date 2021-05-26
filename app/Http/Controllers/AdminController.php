@@ -41,13 +41,13 @@ class AdminController extends Controller
         // ユーザが存在する場合
         if ($exist) {
             // ユーザ情報を取得
-            $user = User::where('name',$request->name)->get();
+            $user = User::where('name',$request->name)->first();
             
             // 管理者でない場合
-            if ($user[0]->user_group != 0) {
+            if ($user->user_group != 0) {
                 // ユーザのユーザ種別を変更する
-                $user[0]->user_group = 0;
-                $user[0]->save();
+                $user->user_group = 0;
+                $user->save();
             }
         } 
         // 管理者一覧画面に遷移
