@@ -35,7 +35,7 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
         ]);
         
-        // ユーザが存在か調べる
+        // ユーザが存在するか調べる
         $exist = User::where('name', $request->name)->exists();
         
         // ユーザが存在する場合

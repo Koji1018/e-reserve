@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-sm-2">
             {{-- カテゴリー追加ボタンのフォーム --}}
-            {!! Form::open(['route' => ['admin.add'], 'method' => 'get']) !!}
+            {!! Form::open(['route' => ['categories.create'], 'method' => 'get']) !!}
                 {!! Form::submit('追加', ['class' => "btn btn-primary btn-block btn-sm"]) !!}
             {!! Form::close() !!}
         </div>
