@@ -43,18 +43,35 @@ class CategoriesController extends Controller
         $category->name = $request->name;
         $category->save();
 
-        // 管理者一覧画面に遷移
+        // カテゴリー一覧画面に遷移
         return CategoriesController::index();
     }
 
+    // カテゴリー編集画面の表示用
     public function edit($id)
     {
-        //
+        // idの値でカテゴリーを検索して取得
+        $category = Category::findOrFail($id);
+        
+        // 備品編集ビューでそれを表示
+        return view('categories.edit', [ 'category' => $category, ]);
     }
 
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255|unique:categories',
+        ]);
+        
+        // idの値でカテゴリーを検索して取得
+        $category = Category::findOrFail($id);
+        
+        // カテゴリー名を更新
+        $category->name = $request->name;
+        $category->save();
+        
+        // カテゴリー一覧画面に遷移
+        return CategoriesController::index();
     }
 
     public function destroy($id)

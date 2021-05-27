@@ -25,18 +25,19 @@
             <thead>
                 <tr>
                     <td>
-                        <div class="form-check">
+                        <div class="form-check", "text-center">
                             <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
                         </div>
                     </td>
                     <th>カテゴリー名</th>
+                    <th>編集</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($categories as $category)
                 <tr>
                     <td>
-                        <div class="form-check">
+                        <div class="form-check", "text-center">
                             <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault{{$category->id}}">
                         </div>
                     </td>
@@ -44,6 +45,11 @@
                         <label class="form-check-label" for="flexCheckDefault{{$category->id}}">
                             {{ $category->name }}
                         </label>
+                    </td>
+                    <td>
+                        <a href="{{ route('categories.edit', ['category' => $category->id]) }}">
+                            <i class="fas fa-edit"></i>
+                        </a>
                     </td>
                 </tr>
                 @endforeach
