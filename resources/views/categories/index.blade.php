@@ -25,8 +25,8 @@
             <thead>
                 <tr>
                     <td>
-                        <div class="form-check", "text-center">
-                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                        <div class="form-check text-center">
+                            <input class="form-check-input" type="checkbox" value="" id="checkAll">
                         </div>
                     </td>
                     <th>カテゴリー名</th>
@@ -37,8 +37,8 @@
                 @foreach ($categories as $category)
                 <tr>
                     <td>
-                        <div class="form-check", "text-center">
-                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault{{$category->id}}">
+                        <div class="form-check text-center">
+                            <input class="form-check-input checks" type="checkbox" value="" id="flexCheckDefault{{$category->id}}">
                         </div>
                     </td>
                     <td>
@@ -58,6 +58,10 @@
 
         {{-- ページネーションのリンク --}}
         {{ $categories->links() }}
+        
+        {{-- ボタン --}}
+        <input type="button" value="チェックボックスの値を配列で取得" id="get_values">
+        
     @endif
 
 @endsection

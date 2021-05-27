@@ -57,6 +57,7 @@ class CategoriesController extends Controller
         return view('categories.edit', [ 'category' => $category, ]);
     }
 
+     // カテゴリー編集処理用
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -74,7 +75,14 @@ class CategoriesController extends Controller
         return CategoriesController::index();
     }
 
-    public function destroy($id)
+
+    // カテゴリー削除画面の表示用
+    public function delete(Request $request){
+        
+    }
+
+    // カテゴリー削除処理用
+    public function destroy(Request $request)
     {
         //
     }
