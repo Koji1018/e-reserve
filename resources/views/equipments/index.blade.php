@@ -20,6 +20,25 @@
         </div>
     </div>
     
+    {{-- カテゴリーのフィルタ --}}
+    <div class="row">
+        <div class="col-sm-3">
+            {!! Form::open(['route' => 'equipments.filter']) !!}
+                <div class="form-group">
+                    {!! Form::label('category', 'カテゴリー：') !!}
+                    {!! Form::select('category', $category, null,) !!}
+                    {!! Form::submit('検索', ) !!}
+                </div>
+            {!! Form::close() !!}
+        </div>
+    </div>
+    
+    {{-- 検索用のフォーム --}}
+    {!! Form::open(['route' => ['equipments.search'], 'method' => 'get']) !!}
+        {!! Form::text('name', null,) !!}
+        {!! Form::submit('検索', null) !!}
+    {!! Form::close() !!}
+    
     @if (count($equipments) > 0)
         <table class="table table-striped">
             <thead>
@@ -66,7 +85,7 @@
         </table>
 
         {{-- ページネーションのリンク --}}
-        {{ $equipments->links() }}
+        {{ $equipments->appends(request()->query())->links() }}
     @endif
 
 @endsection

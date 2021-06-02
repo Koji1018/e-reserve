@@ -33,7 +33,7 @@ class UsersController extends Controller
             ]);
         }
         else{
-            // 管理者一覧画面にリダイレクト
+            // ユーザ一覧画面にリダイレクト
             return redirect('/users');
         }
     }

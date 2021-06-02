@@ -35,6 +35,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(['prefix' => 'equipments/'], function () {
 	    Route::get('delete', 'EquipmentsController@delete')->name('equipments.delete');
 	    Route::delete('destroy', 'EquipmentsController@destroy')->name('equipments.destroy');
+	    Route::get('search', 'EquipmentsController@search')->name('equipments.search');
 	});
     // ユーザ一覧
 	Route::resource('users', 'UsersController', ['only' => ['index']]);

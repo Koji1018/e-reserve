@@ -4,6 +4,7 @@
 
     <h1>ユーザ一覧</h1>
 
+    {{-- 検索用のフォーム --}}
     {!! Form::open(['route' => ['users.search'], 'method' => 'get']) !!}
         {!! Form::text('name', null,) !!}
         {!! Form::submit('検索', null) !!}
@@ -26,7 +27,7 @@
         </table>
 
         {{-- ページネーションのリンク --}}
-        {{ $users->links() }}
+        {{ $users->appends(request()->query())->links() }}
     @endif
 
 @endsection
