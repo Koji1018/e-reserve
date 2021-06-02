@@ -45,8 +45,8 @@ class CategoriesController extends Controller
         $category->name = $request->name;
         $category->save();
 
-        // カテゴリー一覧画面に遷移
-        return CategoriesController::index();
+        // カテゴリー一覧画面にリダイレクト
+        return redirect('/categories');
     }
 
     // カテゴリー編集画面の表示用
@@ -73,8 +73,8 @@ class CategoriesController extends Controller
         $category->name = $request->name;
         $category->save();
         
-        // カテゴリー一覧画面に遷移
-        return CategoriesController::index();
+        // カテゴリー一覧画面にリダイレクト
+        return redirect('/categories');
     }
 
 
@@ -124,7 +124,7 @@ class CategoriesController extends Controller
             $delete_category->delete(); //削除
         }
         
-        // カテゴリー一覧画面に遷移
-        return CategoriesController::index();
+        // カテゴリー一覧画面にリダイレクト
+        return redirect('/categories');
     }
 }

@@ -9,12 +9,11 @@ use App\Category;
 
 class EquipmentsController extends Controller
 {
-     // 備品一覧画面の表示用
+    // 備品一覧画面の表示用
     public function index()
     {
         // 備品一覧をnameの昇順で取得
 		$equipments = Equipment::orderBy('name', 'asc')->paginate(20);
-		
 		
 		// 備品一覧ビューでそれを表示
 		return view('equipments.index', [
@@ -28,7 +27,7 @@ class EquipmentsController extends Controller
         // フォームの入力項目用のインスタンスを生成
         $equipment = new Equipment;
         
-        // カテゴリー一覧をnameの昇順で、「キー:id、値:name」で取得
+        // カテゴリー一覧をnameの昇順で、「キー:id、値:name」で取得(セレクトボックス用)
 		$category = Category::orderBy('name', 'asc')->pluck('name', 'id');
 		
         // 備品追加ビューでそれを表示
@@ -63,8 +62,8 @@ class EquipmentsController extends Controller
         //     'status' => 0, 
         // ]);
 
-        // 備品一覧画面に遷移
-        return EquipmentsController::index();
+        // 備品一覧画面にリダイレクト
+        return redirect('/equipments');
     }
 
     // 備品編集画面の表示用
@@ -73,11 +72,8 @@ class EquipmentsController extends Controller
         // idの値で備品を検索して取得
         $equipment = Equipment::findOrFail($id);
         
-        
-        // カテゴリー一覧をnameの昇順で、「キー:id、値:name」で取得
+        // カテゴリー一覧をnameの昇順で、「キー:id、値:name」で取得(セレクトボックス用)
 		$category = Category::orderBy('name', 'asc')->pluck('name', 'id');
-		
-		//dd($category);
 		
         // 備品編集ビューでそれを表示
         return view('equipments.edit', [
@@ -90,20 +86,22 @@ class EquipmentsController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:categories',
+            'name' => 'required|string|max:255',
         ]);
         
         // idの値で備品を検索して取得
         $equipment = Equipment::findOrFail($id);
         
         // 備品情報を更新
-        $equipment->name = $request->name;
-        $equipment->category_id = $category->id;
+        if ($equipment->name != $request->name) {
+            $equipment->name = $request->name;
+        }
+        $equipment->category_id = $request->category;
         $equipment->status = $request->status;
         $equipment->save();
         
-        // 備品一覧画面に遷移
-        return EquipmentsController::index();
+        // 備品一覧画面にリダイレクト
+        return redirect('/equipments');
     }
 
     // 備品削除画面の表示用

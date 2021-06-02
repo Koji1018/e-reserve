@@ -31,9 +31,10 @@ Route::group(['middleware' => ['auth']], function () {
 	    Route::delete('destroy', 'CategoriesController@destroy')->name('categories.destroy');
 	});
     // 備品一覧、追加、編集、削除
-    Route::resource('equipments', 'EquipmentsController', ['except' => ['show']]);
+    Route::resource('equipments', 'EquipmentsController', ['except' => ['show','destroy']]);
     Route::group(['prefix' => 'equipments/'], function () {
 	    Route::get('delete', 'EquipmentsController@delete')->name('equipments.delete');
+	    Route::delete('destroy', 'EquipmentsController@destroy')->name('equipments.destroy');
 	});
     // ユーザ一覧
 	Route::resource('users', 'UsersController', ['only' => ['index']]);

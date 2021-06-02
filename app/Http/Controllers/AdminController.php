@@ -50,7 +50,7 @@ class AdminController extends Controller
                 $user->save();
             }
         } 
-        // 管理者一覧画面に遷移
-        return AdminController::index();
+        // 管理者一覧画面にリダイレクト
+        return redirect('/admin');
     }
 }
