@@ -24,7 +24,11 @@
                 <tr>
                     <td>{{ $category->name }}</td>
                     <td>{{ $category->equipments_count }}台</td>
-                    <td>{{ $category->r_total }}件</td>
+                    @if( $category->r_total == 0 )
+                        <td>{{ $category->r_total }}件</td>
+                    @else
+                        <td style="color:red">{{ $category->r_total }}件</td>
+                    @endif
                     {!! Form::hidden('category['. $count++. ']', $category->id, ['form' => "destroyForm",]) !!}
                 </tr>
             @endforeach

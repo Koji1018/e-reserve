@@ -49,12 +49,12 @@
                         </label>
                     </td>
                     <td>{{ $equipment->category->name }}</td>
-                    <td>
-                        @if($equipment->status == 0)貸出可能
-                        @elseif($equipment->status == 1) 貸出不可
-                        @else
-                        @endif
-                    </td>
+                    @if($equipment->status == 0)
+                        <td>貸出可能</td>
+                    @elseif($equipment->status == 1)
+                        <td style="color:red">貸出不可</td>
+                    @else
+                    @endif
                     <td>
                         <a href="{{ route('equipments.edit', ['equipment' => $equipment->id]) }}">
                             <i class="fas fa-edit"></i>

@@ -4,6 +4,11 @@
 
     <h1>ユーザ一覧</h1>
 
+    {!! Form::open(['route' => ['users.search'], 'method' => 'get']) !!}
+        {!! Form::text('name', null,) !!}
+        {!! Form::submit('検索', null) !!}
+    {!! Form::close() !!}
+
     @if (count($users) > 0)
         <table class="table table-striped">
             <thead>

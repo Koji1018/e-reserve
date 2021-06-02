@@ -24,11 +24,11 @@
                 <tr>
                     <td>{{ $equipment->name }}</td>
                     <td>{{ $equipment->category->name }}</td>
-                    <td>
-                        @if($equipment->reserve_users_count == 0)無
-                        @else 有
-                        @endif
-                    </td>
+                    @if( $equipment->reserve_users_count == 0 )
+                        <td>無</td>
+                    @else
+                        <td style="color:red">有</td>
+                    @endif
                     {!! Form::hidden('equipment['. $count++. ']', $equipment->id, ['form' => "destroyForm",]) !!}
                 </tr>
             @endforeach

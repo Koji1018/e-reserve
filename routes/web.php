@@ -38,6 +38,10 @@ Route::group(['middleware' => ['auth']], function () {
 	});
     // ユーザ一覧
 	Route::resource('users', 'UsersController', ['only' => ['index']]);
+	Route::group(['prefix' => 'users/'], function () {
+	    Route::get('search', 'UsersController@search')->name('users.search');
+	});
+	
 	// 管理者一覧、追加
 	Route::resource('admin', 'AdminController', ['only' => ['index']]);
 	Route::group(['prefix' => 'admin/'], function () {

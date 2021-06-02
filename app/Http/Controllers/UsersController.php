@@ -19,4 +19,22 @@ class UsersController extends Controller
             'users' => $users,
         ]);
     }
+    
+    // ユーザ一覧画面の検索処理用
+    public function search(Request $request)
+    {
+        // 検索するテキストが入力されている場合のみ一覧を取得する。
+        if(!empty($request->name)) {
+            $users = User::where('name', 'like', '%'.$request->name.'%')->paginate(10);
+            
+            // ユーザ一覧ビューでそれを表示
+            return view('users.index', [
+                'users' => $users,
+            ]);
+        }
+        else{
+            // 管理者一覧画面にリダイレクト
+            return redirect('/users');
+        }
+    }
 }
