@@ -14,8 +14,8 @@
         
         <div class="col-sm-2">
             {{-- カテゴリー削除ボタンのフォーム --}}
-            {!! Form::open(['route' => ['admin.add'], 'method' => 'get']) !!}
-                {!! Form::submit('削除', ['class' => "btn btn-primary btn-block btn-sm"]) !!}
+            {!! Form::open(['route' => ['categories.delete'], 'method' => 'get', 'id' => 'deleteForm',]) !!}
+                {!! Form::submit('削除', ['class' => "btn btn-secondary btn-block btn-sm", 'id' => "delete", 'disabled']) !!}
             {!! Form::close() !!}
         </div>
     </div>
@@ -38,11 +38,11 @@
                 <tr>
                     <td>
                         <div class="form-check text-center">
-                            <input class="form-check-input checks" type="checkbox" value="" id="flexCheckDefault{{$category->id}}">
+                            <input class="form-check-input checks" type="checkbox" value="{{$category->id}}" id="category[{{$category->id}}]" name="category[{{$category->id}}]" form="deleteForm">
                         </div>
                     </td>
                     <td>
-                        <label class="form-check-label" for="flexCheckDefault{{$category->id}}">
+                        <label class="form-check-label" for="category[{{$category->id}}]">
                             {{ $category->name }}
                         </label>
                     </td>
@@ -58,10 +58,6 @@
 
         {{-- ページネーションのリンク --}}
         {{ $categories->links() }}
-        
-        {{-- ボタン --}}
-        <input type="button" value="チェックボックスの値を配列で取得" id="get_values">
-        
     @endif
 
 @endsection

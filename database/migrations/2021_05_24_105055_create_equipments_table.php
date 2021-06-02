@@ -21,7 +21,7 @@ class CreateEquipmentsTable extends Migration
             $table->timestamps();
             
             // 外部キー制約
-            $table->foreign('category_id')->references('id')->on('categories');
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
         });
     }
 
@@ -32,6 +32,8 @@ class CreateEquipmentsTable extends Migration
      */
     public function down()
     {
+        $table->dropForeign(['category_id']);
+        
         Schema::dropIfExists('equipments');
     }
 }

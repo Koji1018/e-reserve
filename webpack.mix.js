@@ -12,5 +12,5 @@ const mix = require('laravel-mix');
  */
 
 mix.js('resources/js/app.js', 'public/js')
-    .js('resources/js/checkbox.js', 'public/js') //←追加 出力元、先（出力名は元のが引き継がれる）
+    .js('resources/js/admin.js', 'public/js') //←追加 出力元、先（出力名は元のが引き継がれる）
     .sass('resources/sass/app.scss', 'public/css');

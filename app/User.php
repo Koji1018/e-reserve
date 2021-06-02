@@ -39,6 +39,11 @@ class User extends Authenticatable
     
     // このユーザが予約中の備品(多対多)(Equipmentモデルとの関係を定義)
     public function reservations(){
-        return $this->belongsToMany(Equipment::class, 'reservations', 'user_id', 'equipment_id')->withTimestamps();
+        return $this->belongsToMany(Equipment::class, 'reservations', 'user_id', 'equipment_id');
+    }
+    
+    // このユーザがチェックしているカテゴリー(多対多)(Categoryモデルとの関係を定義)
+    public function category_checks(){
+        return $this->belongsToMany(Category::class, 'category_user', 'user_id', 'category_id');
     }
 }

@@ -21,4 +21,9 @@ class Equipment extends Model
     public function reserve_users(){
         return $this->belongsToMany(User::class, 'reservations', 'equipment_id', 'user_id')->withTimestamps();
     }
+    
+    // このカテゴリーに関係するモデルの件数をロードする。
+    public function loadRelationshipCounts(){
+        $this->loadCount(['reserve_users',]);
+    }
 }

@@ -11,7 +11,7 @@
 
             {!! Form::open(['route' => 'categories.store']) !!}
                 <div class="form-group">
-                    {!! Form::label('name', 'カテゴリー名') !!}
+                    {!! Form::label('name', 'カテゴリー名：') !!}
                     {!! Form::text('name', null, ['class' => 'form-control']) !!}
                 </div>
 

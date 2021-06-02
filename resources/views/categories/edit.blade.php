@@ -11,7 +11,7 @@
             {!! Form::model($category, ['route' => ['categories.update', $category->id], 'method' => 'put']) !!}
 
                 <div class="form-group">
-                    {!! Form::label('name', 'カテゴリー名') !!}
+                    {!! Form::label('name', 'カテゴリー名：') !!}
                     {!! Form::text('name', null, ['class' => 'form-control']) !!}
                 </div>
 

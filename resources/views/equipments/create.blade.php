@@ -3,15 +3,21 @@
 @section('content')
 
     <div class="text-center">
-        <h1>管理者追加</h1>
+        <h1>備品追加</h1>
     </div>
 
     <div class="row">
         <div class="col-sm-6 offset-sm-3">
 
-            {!! Form::open(['route' => 'admin.update']) !!}
+            {!! Form::open(['route' => 'equipments.store']) !!}
+            
                 <div class="form-group">
-                    {!! Form::label('name', 'ユーザ名：') !!}
+                    {!! Form::label('category_id', 'カテゴリー：') !!}
+                    {!! Form::select('category_id', $category, null, ['class' => 'form-control']) !!}
+                </div>
+                
+                <div class="form-group">
+                    {!! Form::label('name', '製品名：') !!}
                     {!! Form::text('name', null, ['class' => 'form-control']) !!}
                 </div>
 

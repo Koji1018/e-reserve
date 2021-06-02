@@ -25,9 +25,16 @@ Route::get('logout', 'Auth\LoginController@logout')->name('logout.get');
 // 認証済なら許可
 Route::group(['middleware' => ['auth']], function () {
     // カテゴリー一覧、追加、編集、削除
-    Route::resource('categories', 'CategoriesController');
+    Route::resource('categories', 'CategoriesController', ['except' => ['show','destroy']]);
+    Route::group(['prefix' => 'categories/'], function () {
+	    Route::get('delete', 'CategoriesController@delete')->name('categories.delete');
+	    Route::delete('destroy', 'CategoriesController@destroy')->name('categories.destroy');
+	});
     // 備品一覧、追加、編集、削除
-    Route::resource('equipments', 'EquipmentsController');
+    Route::resource('equipments', 'EquipmentsController', ['except' => ['show']]);
+    Route::group(['prefix' => 'equipments/'], function () {
+	    Route::get('delete', 'EquipmentsController@delete')->name('equipments.delete');
+	});
     // ユーザ一覧
 	Route::resource('users', 'UsersController', ['only' => ['index']]);
 	// 管理者一覧、追加
