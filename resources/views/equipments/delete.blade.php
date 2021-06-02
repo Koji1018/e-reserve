@@ -10,4 +10,35 @@
         </p> 
     </div>
     
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>製品名</th>
+                <th>カテゴリー名</th>
+                <th>貸出予約</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- {!! $count = 0 !!} -->
+            @foreach ($equipments as $equipment)
+                <tr>
+                    <td>{{ $equipment->name }}</td>
+                    <td>{{ $equipment->category->name }}</td>
+                    <td>
+                        @if($equipment->reserve_users_count == 0)無
+                        @else 有
+                        @endif
+                    </td>
+                    {!! Form::hidden('equipment['. $count++. ']', $equipment->id, ['form' => "destroyForm",]) !!}
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+    
+    <div class="col-sm-6 offset-sm-3">
+        {{-- カテゴリー削除ボタンのフォーム --}}
+        {!! Form::open(['route' => ['equipments.destroy'], 'method' => 'delete', 'id' => 'destroyForm']) !!}
+        {!! Form::submit('削除', ['class' => "btn btn-primary btn-block btn-sm"]) !!}
+    </div>
+    
 @endsection

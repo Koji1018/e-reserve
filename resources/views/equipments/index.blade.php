@@ -14,7 +14,7 @@
         
         <div class="col-sm-2">
             {{-- 備品削除ボタンのフォーム --}}
-            {!! Form::open(['route' => ['equipments.delete'], 'method' => 'get']) !!}
+            {!! Form::open(['route' => ['equipments.delete'], 'method' => 'get', 'id' => 'deleteForm',]) !!}
                 {!! Form::submit('削除', ['class' => "btn btn-secondary btn-block btn-sm", 'id' => "delete", 'disabled']) !!}
             {!! Form::close() !!}
         </div>
@@ -25,7 +25,7 @@
             <thead>
                 <tr>
                     <td>
-                        <div class="form-check text-center">
+                        <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="" id="checkAll">
                         </div>
                     </td>
@@ -39,12 +39,12 @@
                 @foreach ($equipments as $equipment)
                 <tr>
                     <td>
-                        <div class="form-check text-center">
-                            <input class="form-check-input checks" type="checkbox" value="" id="Equipment{{$equipment->id}}" name="Equipment[]">
+                        <div class="form-check">
+                            <input class="form-check-input checks" type="checkbox" value="{{$equipment->id}}" id="equipment[{{$equipment->id}}]" name="equipment[{{$equipment->id}}]" form="deleteForm">
                         </div>
                     </td>
                     <td>
-                        <label class="form-check-label" for="Equipment{{$equipment->id}}">
+                        <label class="form-check-label" for="equipment[{{$equipment->id}}]">
                             {{ $equipment->name }}
                         </label>
                     </td>

@@ -25,7 +25,7 @@
             <thead>
                 <tr>
                     <td>
-                        <div class="form-check text-center">
+                        <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="" id="checkAll">
                         </div>
                     </td>
@@ -37,7 +37,7 @@
                 @foreach ($categories as $category)
                 <tr>
                     <td>
-                        <div class="form-check text-center">
+                        <div class="form-check">
                             <input class="form-check-input checks" type="checkbox" value="{{$category->id}}" id="category[{{$category->id}}]" name="category[{{$category->id}}]" form="deleteForm">
                         </div>
                     </td>

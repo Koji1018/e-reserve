@@ -107,10 +107,11 @@ class EquipmentsController extends Controller
     // 備品削除画面の表示用
     public function delete(Request $request)
     {
-        // 備品一覧をnameの昇順で取得
-		$equipments = Equipment::orderBy('name', 'asc')->get();
-        
-        //dd($user);   // 追加
+        // チェックされた行の備品IDの配列
+		$equipment_ids = $request->equipment;
+		
+        // 備品情報、予約数を取得して変数定義(withCountメソッドを利用する場合)
+        $equipments = Equipment::withCount(['reserve_users',])->findOrFail($equipment_ids);
         
         // 備品削除ビューでそれを表示
 		return view('equipments.delete', [
@@ -121,6 +122,13 @@ class EquipmentsController extends Controller
     // 備品削除処理用
     public function destroy(Request $request)
     {
-        //
+        // 選択された備品を削除
+        foreach($request->equipment as $equipment){
+            $delete_equipment = Equipment::findOrFail($equipment); // 取得
+            $delete_equipment->delete(); //削除
+        }
+        
+        // 備品一覧画面にリダイレクト
+        return redirect('/equipments');
     }
 }
