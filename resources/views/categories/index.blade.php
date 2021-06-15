@@ -19,6 +19,8 @@
             {!! Form::close() !!}
         </div>
     </div>
+    
+    <hr>
 
     @if (count($categories) > 0)
         <table class="table table-striped">

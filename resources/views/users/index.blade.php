@@ -3,6 +3,8 @@
 @section('content')
 
     <h1>ユーザ一覧</h1>
+    
+    <hr>
 
     {{-- 検索用のフォーム --}}
     {!! Form::open(['route' => ['users.search'], 'method' => 'get']) !!}

@@ -11,7 +11,7 @@
 |
 */
 
-Route::get('/', 'ReservationsController@index');
+Route::get('/', 'ReservationsController@index_user');
 
 // ユーザ登録
 Route::get('signup', 'Auth\RegisterController@showRegistrationForm')->name('signup.get');
@@ -49,4 +49,17 @@ Route::group(['middleware' => ['auth']], function () {
 	    Route::get('add', 'AdminController@add')->name('admin.add');
 	    Route::post('update', 'AdminController@update')->name('admin.update');
 	});
+	
+	// 貸出状況、貸出予約、各フィルタ関連
+	Route::get('reservations', 'ReservationsController@index_all')->name('reservations.index_all');
+	Route::group(['prefix' => 'reservations/'], function () {
+		Route::delete('destroy_all', 'ReservationsController@destroy_all')->name('reservations.destroy_all');
+	    Route::get('user', 'ReservationsController@index_user')->name('reservations.index_user');
+	    Route::get('category', 'ReservationsController@index_category')->name('reservations.index_category');
+	    Route::post('reserve_check', 'ReservationsController@reserve_check')->name('reservations.reserve_check');
+	    Route::post('reserve', 'ReservationsController@reserve')->name('reservations.reserve');
+	    Route::get('filter_index_all', 'ReservationsController@filter_index_all')->name('reservations.filter_index_all');
+	    Route::get('category/filter_index_category', 'ReservationsController@filter_index_category')->name('reservations.filter_index_category');
+	});
+	Route::resource('reservations', 'ReservationsController', ['only' => ['create', 'store', 'destroy']]);
 });

@@ -25,11 +25,8 @@ class CategoriesController extends Controller
     // カテゴリー追加画面の表示用
     public function create()
     {
-        // フォームの入力項目用のインスタンスを生成
-        $category = new Category;
-        
         // カテゴリー追加ビューでそれを表示
-        return view('categories.create', [ 'category' => $category, ]);
+        return view('categories.create');
     }
     
     // カテゴリー追加処理用

@@ -20,24 +20,24 @@
         </div>
     </div>
     
-    {{-- カテゴリーのフィルタ --}}
+    <hr>
+    
     <div class="row">
-        <div class="col-sm-3">
-            {!! Form::open(['route' => 'equipments.filter']) !!}
-                <div class="form-group">
-                    {!! Form::label('category', 'カテゴリー：') !!}
-                    {!! Form::select('category', $category, null,) !!}
-                    {!! Form::submit('検索', ) !!}
-                </div>
-            {!! Form::close() !!}
+        {!! Form::open(['route' => ['equipments.search'], 'method' => 'get']) !!}
+        <div class="col-sm-6">
+            {{-- カテゴリーのフィルタ --}}
+            {!! Form::label('category', 'カテゴリー：') !!}
+            {!! Form::select('category', $category, null,) !!}
         </div>
+        <div class="col-sm-6">
+            {{-- 検索用のフォーム --}}
+            {!! Form::text('name', null,) !!}
+            {!! Form::submit('検索', null) !!}
+        </div>
+        {!! Form::close() !!}
     </div>
     
-    {{-- 検索用のフォーム --}}
-    {!! Form::open(['route' => ['equipments.search'], 'method' => 'get']) !!}
-        {!! Form::text('name', null,) !!}
-        {!! Form::submit('検索', null) !!}
-    {!! Form::close() !!}
+    
     
     @if (count($equipments) > 0)
         <table class="table table-striped">

@@ -12,16 +12,16 @@
             <ul class="navbar-nav">
                 @if (Auth::check())
                     {{-- 貸出予約ページへのリンク --}}
-                    <li class="nav-item"><a href="#">貸出予約</a></li>
+                    <li class="nav-item">{!! link_to_route('reservations.create', '貸出予約', [], ['class' => 'nav-link']) !!}</li>
                     <li class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">貸出状況</a>
                         <ul class="dropdown-menu dropdown-menu-right">
                             {{-- ユーザ予約状況ページへのリンク --}}
-                            <li class="dropdown-item"><a href="#">{{ Auth::user()->name }}</a></li>
+                            <li class="dropdown-item">{!! link_to_route('reservations.index_user', Auth::user()->name) !!}</li>
                             {{-- 全体貸出状況ページへのリンク --}}
-                            <li class="dropdown-item"><a href="#">全体</a></li>
+                            <li class="dropdown-item">{!! link_to_route('reservations.index_all', '全体') !!}</li>
                             {{-- カテゴリー別貸出状況ページへのリンク --}}
-                            <li class="dropdown-item"><a href="#">カテゴリー別</a></li>
+                            <li class="dropdown-item">{!! link_to_route('reservations.index_category', 'カテゴリー別', []) !!}</li>
                         </ul>
                     </li>
                     {{-- 認証ユーザが管理者の場合 --}}

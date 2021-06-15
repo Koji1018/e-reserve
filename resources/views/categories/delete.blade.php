@@ -38,7 +38,8 @@
     <div class="col-sm-6 offset-sm-3">
         {{-- カテゴリー削除ボタンのフォーム --}}
         {!! Form::open(['route' => ['categories.destroy'], 'method' => 'delete', 'id' => 'destroyForm']) !!}
-        {!! Form::submit('削除', ['class' => "btn btn-primary btn-block btn-sm"]) !!}
+            {!! Form::submit('削除', ['class' => "btn btn-primary btn-block btn-sm"]) !!}
+        {!! Form::close() !!}
     </div>
 
 @endsection

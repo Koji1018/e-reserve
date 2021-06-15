@@ -12,6 +12,8 @@
             {!! Form::close() !!}
         </div>
     </div>
+    
+    <hr>
 
     @if (count($admins) > 0)
         <table class="table table-striped">

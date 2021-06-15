@@ -25,7 +25,7 @@ class UsersController extends Controller
     {
         // 検索するテキストが入力されている場合のみ一覧を取得する。
         if(!empty($request->name)) {
-            $users = User::where('name', 'like', '%'.$request->name.'%')->paginate(10);
+            $users = User::orderBy('name', 'asc')->where('name', 'like', '%'.$request->name.'%')->paginate(10);
             
             // ユーザ一覧ビューでそれを表示
             return view('users.index', [

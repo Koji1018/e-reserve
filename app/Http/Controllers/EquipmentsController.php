@@ -16,7 +16,8 @@ class EquipmentsController extends Controller
 		$equipments = Equipment::orderBy('name', 'asc')->paginate(20);
 		
 		// カテゴリー一覧をnameの昇順で、「キー:id、値:name」で取得(セレクトボックス用)
-		$category = Category::orderBy('name', 'asc')->pluck('name', 'id');
+		$category = Category::orderBy('name', 'asc')->pluck('name', 'id')->prepend("すべてのカテゴリー", 0);
+		
 		
 		// 備品一覧ビューでそれを表示
 		return view('equipments.index', [
@@ -28,15 +29,11 @@ class EquipmentsController extends Controller
     // 備品追加画面の表示用
     public function create()
     {
-        // フォームの入力項目用のインスタンスを生成
-        $equipment = new Equipment;
-        
         // カテゴリー一覧をnameの昇順で、「キー:id、値:name」で取得(セレクトボックス用)
-		$category = Category::orderBy('name', 'asc')->pluck('name', 'id');
+		$category = Category::orderBy('name', 'asc')->pluck('name', 'id')->toArray();
 		
         // 備品追加ビューでそれを表示
         return view('equipments.create', [
-            'equipment' => $equipment,
             'category' => $category,
         ]);
     }
@@ -77,7 +74,7 @@ class EquipmentsController extends Controller
         $equipment = Equipment::findOrFail($id);
         
         // カテゴリー一覧をnameの昇順で、「キー:id、値:name」で取得(セレクトボックス用)
-		$category = Category::orderBy('name', 'asc')->pluck('name', 'id');
+		$category = Category::orderBy('name', 'asc')->pluck('name', 'id')->toArray();
 		
         // 備品編集ビューでそれを表示
         return view('equipments.edit', [
@@ -139,18 +136,31 @@ class EquipmentsController extends Controller
     // 備品一覧画面の検索処理用
     public function search(Request $request)
     {
+        // 「すべてのカテゴリー」以外
+        if ($request->category != 0) {
+            // フィルタリングされた一覧を取得する
+            $query = Equipment::orderBy('name', 'asc')->where('category_id', $request->category);
+        }
+        // 「すべてのカテゴリー」
+        else {
+            // 全件取得
+            $query = Equipment::orderBy('name', 'asc');
+        }
+
         // 検索するテキストが入力されている場合のみ一覧を取得する。
         if(!empty($request->name)) {
-            $equipments = Equipment::where('name', 'like', '%'.$request->name.'%')->paginate(20);
-            
-            // 備品一覧ビューでそれを表示
-            return view('equipments.index', [
-                'equipments' => $equipments,
-            ]);
+            $query->where('name', 'like', '%'.$request->name.'%');
         }
-        else{
-            // 備品一覧画面にリダイレクト
-            return redirect('/equipments');
-        }
+        
+        $equipments = $query->paginate(20);
+        
+        // カテゴリー一覧をnameの昇順で、「キー:id、値:name」で取得(セレクトボックス用)
+		$category = Category::orderBy('name', 'asc')->pluck('name', 'id')->prepend("すべてのカテゴリー", 0);
+        
+        // 備品一覧ビューでそれを表示
+        return view('equipments.index', [
+            'equipments' => $equipments,
+            'category' => $category,
+        ]);
     }
 }
