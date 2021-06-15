@@ -4,7 +4,7 @@
 
     <h1>管理者一覧</h1>
     
-    <div class="row">
+    <div class="row mt-3">
         <div class="col-sm-2">
             {{-- 管理者追加ボタンのフォーム --}}
             {!! Form::open(['route' => ['admin.add'], 'method' => 'get']) !!}

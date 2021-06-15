@@ -4,7 +4,7 @@
 
     <h1>カテゴリー一覧</h1>
     
-    <div class="row">
+    <div class="row mt-3">
         <div class="col-sm-2">
             {{-- カテゴリー追加ボタンのフォーム --}}
             {!! Form::open(['route' => ['categories.create'], 'method' => 'get']) !!}
@@ -23,7 +23,7 @@
     <hr>
 
     @if (count($categories) > 0)
-        <table class="table table-striped">
+        <table class="table table-striped table-bordered text-center">
             <thead>
                 <tr>
                     <td>

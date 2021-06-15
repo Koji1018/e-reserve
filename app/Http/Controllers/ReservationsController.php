@@ -15,15 +15,19 @@ class ReservationsController extends Controller
     // トップページ画面かつユーザ予約状況画面の表示用
     public function index_user()
     {
-        $data = []; // 今は$reservationsしか使ってないが一応
+        $data = [];
 		if (\Auth::check()) { // 認証済みの場合				
 			$user = \Auth::user(); // 認証済みユーザを取得
 			$datetime = Carbon::now('Asia/Tokyo'); // 現在の日時取得
- 			$reservations = $user->reservations()->where('status',1)->orderBy('lending_start', 'asc')->paginate(10); // ユーザの予約一覧を貸出開始日時の昇順で取得
+			$today = Carbon::yesterday('Asia/Tokyo'); // 現在の日時取得
+ 			$reservations = $user->reservations()->where('status',1)
+ 			    ->where('lending_start','like', $datetime->format('Y-m-d'). '%')
+ 			    ->orderBy('lending_start', 'asc')->paginate(10);
 			$data = [
 				'user' => $user,
 				'reservations' => $reservations,
 				'datetime' => $datetime,
+				'today' => $today,
 			];
 			return view('reservations.index_user', $data); // lendings/userビューでそれらを表示
 		} else return view('auth.login');
@@ -78,8 +82,6 @@ class ReservationsController extends Controller
             
         }
 
-        //dd($total);
-        
         return view('reservations.index_all', [
             'categories' => $categories,
             'reserve_oks' => $reserve_ok,
@@ -103,15 +105,15 @@ class ReservationsController extends Controller
 		$equipments = $query->paginate(20);
 		
 		// 時間表示
-		$month = [10,11,12,13,14,15,16,17,]; // 時
-		$minute = [0,30]; // 分
+		$month = ['09','10','11','12','13','14','15','16','17','18','19','20','21','22']; // 時
+		$minute = ['00','30']; // 分
 		
 		for($i = 0; $i < count($month); $i++){
-		    $time[] = $month[$i]. ':0'. $minute[0]; 
+		    $time[] = $month[$i]. ':'. $minute[0]; 
 		    $time[] = $month[$i]. ':'. $minute[1];
 		}
 		
-		// 書く備品の予約時間を取得
+		// 各備品の予約時間を取得
 		$count = 0;
 		foreach($equipments as $equipment){
 		    $reserved_list[$count] = [];
@@ -180,7 +182,7 @@ class ReservationsController extends Controller
     {
         // バリデーション
         $request->validate([
-            'reserve_date' => 'required',
+            'reserve_date' => 'required|after:"yesterday"',
             'reserve_time_start' => 'required',
             'reserve_time_end' => 'required',
             'category_id' => 'required',
@@ -195,7 +197,7 @@ class ReservationsController extends Controller
         // カテゴリー一覧をnameの昇順で、「キー:id、値:name」で取得(セレクトボックス用)
 		$category = Category::orderBy('name', 'asc')->pluck('name', 'id')->toArray();
         
-        $equipments = Category::findOrFail($request->category_id)->equipments; // カテゴリーに属する備品一覧
+        $equipments = Category::findOrFail($request->category_id)->equipments->where('status',0); // カテゴリーに属する備品一覧
 
         $count = 0;  // delete_list用(配列の何番目かを確認)
         $delete_list[] = "";
@@ -204,28 +206,26 @@ class ReservationsController extends Controller
         foreach($equipments as $equipment){
             // 貸出期間内の予約一覧を取得する
             // 予約開始時間に被りがないか確認
-            $reservations_start_count = Reservation::orderBy('lending_start', 'asc')
+            $reservations_count = Reservation::orderBy('lending_start', 'asc')
                 ->where('equipment_id', $equipment->id)
                 ->where('lending_start','like', $request->reserve_date .'%')
-                ->whereTime('lending_start','>=',$request->reserve_time_start)->whereTime('lending_start','<=',$request->reserve_time_end)
+                ->whereTime('lending_start','>=',$request->reserve_time_start)->whereTime('lending_start','<',$request->reserve_time_end)
                 ->get();
-                
-            // 開始に被りがなかった場合は終了で被りがないか確認
-            if(count($reservations_start_count) == 0){
-                $reservations_end_count = Reservation::orderBy('lending_start', 'asc')
+            if(count($reservations_count) == 0){
+                $reservations_count = Reservation::orderBy('lending_start', 'asc')
                     ->where('equipment_id', $equipment->id)
                     ->where('lending_end','like', $request->reserve_date .'%')
-                    ->whereTime('lending_end','>=',$request->reserve_time_start)->whereTime('lending_end','<=',$request->reserve_time_end)
+                    ->whereTime('lending_end','>=',$request->reserve_time_start)->whereTime('lending_end','<',$request->reserve_time_end)
                     ->get();
-                    
-                if(count($reservations_end_count) != 0){
-                    // 備品一覧から対象の備品を削除するための備品ID取得
-                    $delete_list[] = $count; 
-                }
-            }else{
-                // 備品一覧から対象の備品を削除するための備品ID取得
-                $delete_list[] = $count; 
-            }
+                if(count($reservations_count) == 0){
+                    $reservations_count = Reservation::orderBy('lending_start', 'asc')
+                        ->where('equipment_id', $equipment->id)
+                        ->where('lending_start','like', $request->reserve_date .'%')
+                        ->whereTime('lending_start','<=',$request->reserve_time_start)->whereTime('lending_end','>',$request->reserve_time_end)
+                        ->get(); 
+                    if(count($reservations_count) != 0) $delete_list[] = $count;
+                }else $delete_list[] = $count; 
+            }else $delete_list[] = $count;
             $count++;
         }
             
@@ -244,7 +244,7 @@ class ReservationsController extends Controller
         }
         
         // ユーザの予約(check状態)を貸出開始日時の昇順で取得
-		$reservations_confirm = $user->reservations()->where('status',0)->orderBy('lending_start', 'asc')->paginate(10);
+		$reservations_confirm = $user->reservations()->where('status',0)->orderBy('lending_start', 'asc')->get();
         
         // 貸出予約ビューでそれを表示
         return view('reservations.create', [
@@ -269,28 +269,30 @@ class ReservationsController extends Controller
         
         
         // 念のための空いている備品を再度取得 //
-        $equipments = Category::findOrFail($request->category_id)->equipments;
+        $equipments = Category::findOrFail($request->category_id)->equipments->where('status',0);
         $count = 0;
         $delete_list[] = "";
         foreach($equipments as $equipment){
-            $reservations_start_count = Reservation::orderBy('lending_start', 'asc')
+            $reservations_count = Reservation::orderBy('lending_start', 'asc')
                 ->where('equipment_id', $equipment->id)
                 ->where('lending_start','like', $request->reserve_date .'%')
-                ->whereTime('lending_start','>=',$request->reserve_time_start)->whereTime('lending_start','<=',$request->reserve_time_end)
+                ->whereTime('lending_start','>=',$request->reserve_time_start)->whereTime('lending_start','<',$request->reserve_time_end)
                 ->get();
-                
-            if(count($reservations_start_count) == 0){
-                $reservations_end_count = Reservation::orderBy('lending_start', 'asc')
+            if(count($reservations_count) == 0){
+                $reservations_count = Reservation::orderBy('lending_start', 'asc')
                     ->where('equipment_id', $equipment->id)
                     ->where('lending_end','like', $request->reserve_date .'%')
-                    ->whereTime('lending_end','>=',$request->reserve_time_start)->whereTime('lending_end','<=',$request->reserve_time_end)
+                    ->whereTime('lending_end','>=',$request->reserve_time_start)->whereTime('lending_end','<',$request->reserve_time_end)
                     ->get();
-                if(count($reservations_end_count) != 0){
-                    $delete_list[] = $count; 
-                }
-            }else{
-                $delete_list[] = $count; 
-            }
+                if(count($reservations_count) == 0){
+                    $reservations_count = Reservation::orderBy('lending_start', 'asc')
+                        ->where('equipment_id', $equipment->id)
+                        ->where('lending_start','like', $request->reserve_date .'%')
+                        ->whereTime('lending_start','<=',$request->reserve_time_start)->whereTime('lending_end','>',$request->reserve_time_end)
+                        ->get();
+                    if(count($reservations_count) != 0) $delete_list[] = $count; 
+                }else $delete_list[] = $count; 
+            }else $delete_list[] = $count;
             $count++;
         }
         for($i = 0; $i < count($delete_list); $i++) {
@@ -323,7 +325,7 @@ class ReservationsController extends Controller
         }
         
         // ユーザの予約(check状態)を貸出開始日時の昇順で取得
-		$reservations_confirm = $user->reservations()->where('status',0)->orderBy('lending_start', 'asc')->paginate(10);
+		$reservations_confirm = $user->reservations()->where('status',0)->orderBy('lending_start', 'asc')->get();
         
         // 貸出予約ビューでそれを表示
         return view('reservations.create', [
@@ -341,7 +343,7 @@ class ReservationsController extends Controller
         $user = \Auth::user(); // 認証済みユーザを取得
         
         // ユーザの予約(check状態)を貸出開始日時の昇順で取得
-		$reservations = $user->reservations()->where('status',0)->orderBy('lending_start', 'asc')->paginate(10);
+		$reservations = $user->reservations()->where('status',0)->orderBy('lending_start', 'asc')->get();
         
         foreach($reservations as $reservation){
             $reservation->status = 1;
@@ -358,15 +360,13 @@ class ReservationsController extends Controller
         $delete_equipment->delete(); //削除
 
         // リダイレクト先の指定
-        if($request->page == 0) return redirect('/reservations/user');
+        if($request->page == 0) return back();
         else return redirect('/reservations/create');
     }
     
     // 予約全削除処理用
     public function destroy_all(Request $request)
     {
-        //dd($request);
-        
         // 選択された備品を削除
         foreach($request->reservation_id as $reservation_id){
             $delete_equipment = Reservation::findOrFail($reservation_id); // 取得
@@ -375,6 +375,28 @@ class ReservationsController extends Controller
 
         // 予約画面にリダイレクト
         return redirect('/reservations/create');
+    }
+    
+    // 全体貸出状況画面のフィルタ処理用
+    public function filter_index_user(Request $request)
+    {
+        // 日付と時間からインスタンスを生成
+        $datetime = new Carbon($request->filter_date);
+        
+        $data = [];
+		$user = \Auth::user(); // 認証済みユーザを取得
+		$today = Carbon::yesterday('Asia/Tokyo'); // 現在の日時取得
+ 		$reservations = $user->reservations()->where('status',1)
+ 		    ->where('lending_start','like', $datetime->format('Y-m-d'). '%')
+ 		    ->orderBy('lending_start', 'asc')->paginate(10);
+		$data = [
+			'user' => $user,
+			'reservations' => $reservations,
+			'datetime' => $datetime,
+			'today' => $today,
+		];
+		
+		return view('reservations.index_user', $data); // lendings/userビューでそれらを表示
     }
     
     // 全体貸出状況画面のフィルタ処理用
@@ -435,8 +457,6 @@ class ReservationsController extends Controller
             'datetime' => $datetime,
             'aftertime' => $aftertime,
         ]);
-        
-        
     }
     
     // カテゴリー別貸出状況画面のフィルタ処理用
@@ -449,18 +469,18 @@ class ReservationsController extends Controller
 		
 		// カテゴリーに属する備品一覧
 		$query = Equipment::orderBy('name', 'asc')->where('status',0)->where('category_id', $request->category);
-		$equipments = $query->paginate(20);
+		$equipments = $query->paginate(10);
 		
 		// 時間表示
-		$month = [10,11,12,13,14,15,16,17,]; // 時
-		$minute = [0,30]; // 分
+		$month = ['09','10','11','12','13','14','15','16','17','18','19','20','21','22']; // 時
+		$minute = ['00','30']; // 分
 		
 		for($i = 0; $i < count($month); $i++){
-		    $time[] = $month[$i]. ':0'. $minute[0]; 
+		    $time[] = $month[$i]. ':'. $minute[0]; 
 		    $time[] = $month[$i]. ':'. $minute[1];
 		}
 		
-		// 書く備品の予約時間を取得
+		// 各備品の予約時間を取得
 		$count = 0;
 		foreach($equipments as $equipment){
 		    $reserved_list[$count] = [];

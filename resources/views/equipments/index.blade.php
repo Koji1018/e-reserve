@@ -4,7 +4,7 @@
 
     <h1>備品一覧</h1>
     
-    <div class="row">
+    <div class="row mt-3">
         <div class="col-sm-2">
             {{-- 備品追加ボタンのフォーム --}}
             {!! Form::open(['route' => ['equipments.create'], 'method' => 'get']) !!}
@@ -22,17 +22,25 @@
     
     <hr>
     
-    <div class="row">
+    <div class="row my-3">
         {!! Form::open(['route' => ['equipments.search'], 'method' => 'get']) !!}
-        <div class="col-sm-6">
+        <div class="d-flex">
             {{-- カテゴリーのフィルタ --}}
-            {!! Form::label('category', 'カテゴリー：') !!}
-            {!! Form::select('category', $category, null,) !!}
+            <div class="col-sm-6">
+                {!! Form::label('category', 'カテゴリー：') !!}
+            </div>
+            <div class="col-sm-9">
+                {!! Form::select('category', $category, null,) !!}
+            </div>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-6 d-flex">
             {{-- 検索用のフォーム --}}
-            {!! Form::text('name', null,) !!}
-            {!! Form::submit('検索', null) !!}
+            <div>
+                {!! Form::text('name', null,) !!}
+            </div>
+            <div class="px-3">
+                {!! Form::submit('検索', null) !!}
+            </div>
         </div>
         {!! Form::close() !!}
     </div>
@@ -40,7 +48,7 @@
     
     
     @if (count($equipments) > 0)
-        <table class="table table-striped">
+        <table class="table table-striped table-bordered text-center">
             <thead>
                 <tr>
                     <td>

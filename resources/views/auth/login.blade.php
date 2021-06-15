@@ -6,7 +6,7 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-6 offset-sm-3">
+        <div class="col-sm-6 offset-sm-3 border border-dark py-3 px-5 mt-3">
 
             {!! Form::open(['route' => 'login.post']) !!}
                 <div class="form-group">
@@ -18,11 +18,13 @@
                     {!! Form::label('password', 'パスワード') !!}
                     {!! Form::password('password', ['class' => 'form-control']) !!}
                 </div>
-
-                {!! Form::submit('ログイン', ['class' => 'btn btn-primary btn-block']) !!}
+                <div class="col-sm-6 offset-sm-3">
+                    {!! Form::submit('ログイン', ['class' => 'btn btn-primary btn-block']) !!}
+                </div>
             {!! Form::close() !!}
-
-            {{-- ユーザ登録ページへのリンク --}}
+        </div>
+        <div class="col-sm-6 offset-sm-3">
+        {{-- ユーザ登録ページへのリンク --}}
             <p class="mt-2">{!! link_to_route('signup.get', 'Create an Account') !!}</p>
         </div>
     </div>

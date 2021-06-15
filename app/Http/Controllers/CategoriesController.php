@@ -104,6 +104,7 @@ class CategoriesController extends Controller
                 $r_total += $equipment->reserve_users_count;
             }
             $category->r_total = $r_total;
+            $r_total = 0;
         }
         
         // カテゴリー削除ビューでそれを表示

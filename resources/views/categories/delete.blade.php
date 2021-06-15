@@ -4,13 +4,13 @@
 
     <div class="text-center">
         <h1>カテゴリー削除</h1>
-        <p>
+        <p class="mt-3">
            カテゴリーを削除すると、関連する備品、貸出予約状況も削除されます。<br>
            本当に削除しますか？
         </p> 
     </div>
     
-    <table class="table table-striped">
+    <table class="table table-striped table-bordered text-center">
         <thead>
             <tr>
                 <th>カテゴリー名</th>
@@ -38,7 +38,9 @@
     <div class="col-sm-6 offset-sm-3">
         {{-- カテゴリー削除ボタンのフォーム --}}
         {!! Form::open(['route' => ['categories.destroy'], 'method' => 'delete', 'id' => 'destroyForm']) !!}
+        <div class="col-sm-6 offset-sm-3">
             {!! Form::submit('削除', ['class' => "btn btn-primary btn-block btn-sm"]) !!}
+        </div>
         {!! Form::close() !!}
     </div>
 

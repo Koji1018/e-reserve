@@ -59,6 +59,7 @@ Route::group(['middleware' => ['auth']], function () {
 	    Route::post('reserve_check', 'ReservationsController@reserve_check')->name('reservations.reserve_check');
 	    Route::post('reserve', 'ReservationsController@reserve')->name('reservations.reserve');
 	    Route::get('filter_index_all', 'ReservationsController@filter_index_all')->name('reservations.filter_index_all');
+	    Route::get('user/filter_index_user', 'ReservationsController@filter_index_user')->name('reservations.filter_index_user');
 	    Route::get('category/filter_index_category', 'ReservationsController@filter_index_category')->name('reservations.filter_index_category');
 	});
 	Route::resource('reservations', 'ReservationsController', ['only' => ['create', 'store', 'destroy']]);

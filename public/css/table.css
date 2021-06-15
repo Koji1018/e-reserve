@@ -1,0 +1,18 @@
+.table thead th{
+  position: sticky;
+  top: 0;
+  background-color: white;
+  /* tbody内のセルより手前に表示する */
+  z-index: 1;
+}
+
+.table th:first-child{
+  position: sticky;
+  left: 0;
+  background-color: white;
+}
+
+table thead th:first-child {
+  /* ヘッダー行内の他のセルより手前に表示する */
+  z-index: 2;
+}
