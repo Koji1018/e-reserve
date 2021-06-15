@@ -3,7 +3,7 @@
 /public/storage
 /storage/*.key
 /vendor
-!/vendor/*AuthenticatesUsers.php
+!/vendor/laravel/framework/src/Illuminate\Foundation\Auth\AuthenticatesUsers.php
 .env
 .env.backup
 .phpunit.result.cache
