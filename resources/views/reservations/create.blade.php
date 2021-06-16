@@ -38,7 +38,7 @@
             </div>
         </div>
         <div class="form-group d-flex">
-            <div class="col-sm-4">
+            <div class="col-sm-4 offset-sm-6">
                 {!! Form::submit('空き状況確認', ['class' => 'btn btn-primary btn-block']) !!}
             </div>
             {!! Form::close() !!}
@@ -96,20 +96,22 @@
             @endforeach
         </tbody>
     </table>
-    
-    {!! Form::open(['route' => 'reservations.store']) !!}
-        <div class="form-group col-sm-4">
+    <div class="form-group d-flex text-center offset-sm-3">
+        <div class="col-sm-3">
+            {{-- 予約ボタンのフォーム --}}
+            {!! Form::open(['route' => 'reservations.store']) !!}
             {!! Form::submit('予約', ['class' => 'btn btn-primary btn-block']) !!}
+            {!! Form::close() !!}
         </div>
-    {!! Form::close() !!}
-    
-    {{-- 全取消ボタンのフォーム --}}
-    {!! Form::open(['route' => ['reservations.destroy_all'], 'method' => 'delete', 'id' => 'destroyForm']) !!}
-        <div class="form-group col-sm-4">
-            {!! Form::submit('全取消', ['class' => "btn btn-danger btn-block btn-sm"]) !!}
+        
+        <div class="col-sm-3">
+            {{-- 全取消ボタンのフォーム --}}
+            {!! Form::open(['route' => ['reservations.destroy_all'], 'method' => 'delete', 'id' => 'destroyForm']) !!}
+            {!! Form::submit('全取消', ['class' => "btn btn-danger btn-block"]) !!}
+            {!! Form::close() !!}
         </div>
-    {!! Form::close() !!}
-    
+    </div>
+
     @endif
 
 @endsection

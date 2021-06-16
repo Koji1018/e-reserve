@@ -24,7 +24,7 @@
     <hr>
     
     <p>区分：<font size="5">□</font> 貸出可能　<font color="red">■</font> 貸出予約済</p>
-    <div class="table-responsive" style="width:100%;overflow:auto; max-height:800px;">
+    <div class="table-responsive" style="width:100%;overflow:auto; max-height:600px;">
     <table class="table table-striped table-bordered text-center">
         <thead>
             <tr>

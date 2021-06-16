@@ -184,7 +184,7 @@ class ReservationsController extends Controller
         $request->validate([
             'reserve_date' => 'required|after:"yesterday"',
             'reserve_time_start' => 'required',
-            'reserve_time_end' => 'required',
+            'reserve_time_end' => 'required|after:reserve_time_start',
             'category_id' => 'required',
             'number' => 'required',
         ]);
