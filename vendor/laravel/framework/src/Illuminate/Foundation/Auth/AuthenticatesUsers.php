@@ -144,8 +144,7 @@ trait AuthenticatesUsers
      */
     public function username()
     {
-        // return 'email';
-        return 'name'; // ユーザ名でログインするように修正
+        return 'email';
     }
 
     /**
