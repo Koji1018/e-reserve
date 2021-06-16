@@ -133,7 +133,7 @@ class ReservationsController extends Controller
                         $reserved_check = Reservation::orderBy('lending_start', 'asc')
                         ->where('equipment_id', $equipment->id)
                         ->where('lending_start','like', $datetime->format('Y-m-d'). '%')
-                        ->whereTime('lending_start','<=',$time[$i])->whereTime('lending_end','>',$time[$i+1])
+                        ->whereTime('lending_start','<=',$time[$i])->whereTime('lending_end','>=',$time[$i+1])
                         ->get();
                     }
                 }
@@ -221,7 +221,7 @@ class ReservationsController extends Controller
                     $reservations_count = Reservation::orderBy('lending_start', 'asc')
                         ->where('equipment_id', $equipment->id)
                         ->where('lending_start','like', $request->reserve_date .'%')
-                        ->whereTime('lending_start','<=',$request->reserve_time_start)->whereTime('lending_end','>',$request->reserve_time_end)
+                        ->whereTime('lending_start','<=',$request->reserve_time_start)->whereTime('lending_end','=>',$request->reserve_time_end)
                         ->get(); 
                     if(count($reservations_count) != 0) $delete_list[] = $count;
                 }else $delete_list[] = $count; 
@@ -288,7 +288,7 @@ class ReservationsController extends Controller
                     $reservations_count = Reservation::orderBy('lending_start', 'asc')
                         ->where('equipment_id', $equipment->id)
                         ->where('lending_start','like', $request->reserve_date .'%')
-                        ->whereTime('lending_start','<=',$request->reserve_time_start)->whereTime('lending_end','>',$request->reserve_time_end)
+                        ->whereTime('lending_start','<=',$request->reserve_time_start)->whereTime('lending_end','>=',$request->reserve_time_end)
                         ->get();
                     if(count($reservations_count) != 0) $delete_list[] = $count; 
                 }else $delete_list[] = $count; 
@@ -430,7 +430,7 @@ class ReservationsController extends Controller
                         $reservations_count = Reservation::orderBy('lending_start', 'asc')
                             ->where('equipment_id', $equipment->id)
                             ->where('lending_start','like', $datetime->format('Y-m-d'). '%')
-                            ->whereTime('lending_start','<=',$datetime->format('H:i'))->whereTime('lending_end','>',$aftertime)
+                            ->whereTime('lending_start','<=',$datetime->format('H:i'))->whereTime('lending_end','>=',$aftertime)
                             ->get();
                         if(count($reservations_count) != 0) $reserved_list[] = $count;
                     }else $reserved_list[] = $count; 
@@ -500,7 +500,7 @@ class ReservationsController extends Controller
                         $reserved_check = Reservation::orderBy('lending_start', 'asc')
                         ->where('equipment_id', $equipment->id)
                         ->where('lending_start','like', $datetime->format('Y-m-d'). '%')
-                        ->whereTime('lending_start','<=',$time[$i])->whereTime('lending_end','>',$time[$i+1])
+                        ->whereTime('lending_start','<=',$time[$i])->whereTime('lending_end','>=',$time[$i+1])
                         ->get();
                     }
                 }
