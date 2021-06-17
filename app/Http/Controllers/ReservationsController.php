@@ -67,7 +67,7 @@ class ReservationsController extends Controller
             ->get();
         
         // 1つにまとめる
-        $reservations_list = $reservations_list1->union($reservations_list2)->union($reservations_list3);
+        $reservations_list = $reservations_list1->concat($reservations_list2)->concat($reservations_list3);
 
         // カテゴリーの備品類
         foreach($categories as $category){
@@ -114,28 +114,31 @@ class ReservationsController extends Controller
 		    $time[] = $month[$i]. ':'. $minute[1];
 		}
 		
+		// 予約を検索日分だけ取得
+        $reservations_list = Reservation::orderBy('lending_start', 'asc')
+            ->whereDate('lending_start', $datetime->format('Y-m-d'))
+            ->get();
+		
 		// 各備品の予約時間を取得
 		$count = 0;
 		foreach($equipments as $equipment){
 		    $reserved_list[$count] = [];
 		    for($i = 0; $i < count($time)-1; $i++){
-    		    $reserved_check = Reservation::orderBy('lending_start', 'asc')
-                    ->where('equipment_id', $equipment->id)
-                    ->whereDate('lending_start', $datetime->format('Y-m-d'))
-                    ->whereTime('lending_start','>=',$time[$i])->whereTime('lending_start','<',$time[$i+1])
-                    ->get();
+    		    $reserved_check = $reservations_list
+    		        ->where('equipment_id', $equipment->id)
+                    ->where('lending_start','<=',$datetime->format('Y-m-d'). ' '. $time[$i]. '%')->where('lending_end','>=',$datetime->format('Y-m-d'). ' '. $time[$i]. '%')
+                    ->where('lending_start','<=',$datetime->format('Y-m-d'). ' '. $time[$i+1].'%')->where('lending_end','>=',$datetime->format('Y-m-d'). ' '. $time[$i+1].'%');
+                
                 if(count($reserved_check) == 0){
-                    $reserved_check = Reservation::orderBy('lending_start', 'asc')
+                    $reserved_check = $reservations_list
                         ->where('equipment_id', $equipment->id)
-                        ->whereDate('lending_end', $datetime->format('Y-m-d'))
-                        ->whereTime('lending_end','>=',$time[$i])->whereTime('lending_end','<',$time[$i+1])
-                        ->get();
+                        ->where('lending_start','>',$datetime->format('Y-m-d'). ' '. $time[$i].'%')
+                        ->where('lending_start','<=',$datetime->format('Y-m-d'). ' '. $time[$i+1].'%')->where('lending_end','>=',$datetime->format('Y-m-d'). ' '. $time[$i+1].'%');
                     if(count($reserved_check) == 0){
-                        $reserved_check = Reservation::orderBy('lending_start', 'asc')
-                        ->where('equipment_id', $equipment->id)
-                        ->whereDate('lending_start', $datetime->format('Y-m-d'))
-                        ->whereTime('lending_start','<=',$time[$i])->whereTime('lending_end','>=',$time[$i+1])
-                        ->get();
+                        $reserved_check = $reservations_list
+                            ->where('equipment_id', $equipment->id)
+                            ->where('lending_start','<=',$datetime->format('Y-m-d'). ' '. $time[$i].'%')->where('lending_end','>=',$datetime->format('Y-m-d'). ' '. $time[$i].'%')
+                            ->where('lending_end','<',$datetime->format('Y-m-d'). ' '. $time[$i+1].'%');
                     }
                 }
                 if(count($reserved_check) != 0) $reserved_list[$count][] = 1; 
@@ -143,6 +146,36 @@ class ReservationsController extends Controller
 		    }
             $count++;
 		}
+
+// 		// 各備品の予約時間を取得
+// 		$count = 0;
+// 		foreach($equipments as $equipment){
+// 		    $reserved_list[$count] = [];
+// 		    for($i = 0; $i < count($time)-1; $i++){
+//     		    $reserved_check = Reservation::orderBy('lending_start', 'asc')
+//                     ->where('equipment_id', $equipment->id)
+//                     ->whereDate('lending_start', $datetime->format('Y-m-d'))
+//                     ->whereTime('lending_start','>=',$time[$i])->whereTime('lending_start','<',$time[$i+1])
+//                     ->get();
+//                 if(count($reserved_check) == 0){
+//                     $reserved_check = Reservation::orderBy('lending_start', 'asc')
+//                         ->where('equipment_id', $equipment->id)
+//                         ->whereDate('lending_end', $datetime->format('Y-m-d'))
+//                         ->whereTime('lending_end','>=',$time[$i])->whereTime('lending_end','<',$time[$i+1])
+//                         ->get();
+//                     if(count($reserved_check) == 0){
+//                         $reserved_check = Reservation::orderBy('lending_start', 'asc')
+//                         ->where('equipment_id', $equipment->id)
+//                         ->whereDate('lending_start', $datetime->format('Y-m-d'))
+//                         ->whereTime('lending_start','<=',$time[$i])->whereTime('lending_end','>=',$time[$i+1])
+//                         ->get();
+//                     }
+//                 }
+//                 if(count($reserved_check) != 0) $reserved_list[$count][] = 1; 
+//                 else $reserved_list[$count][] = 0;
+// 		    }
+//             $count++;
+// 		}
 
 		return view('reservations.index_category', [
             'category' => $category,
@@ -198,51 +231,51 @@ class ReservationsController extends Controller
         // カテゴリー一覧をnameの昇順で、「キー:id、値:name」で取得(セレクトボックス用)
 		$category = Category::orderBy('name', 'asc')->pluck('name', 'id')->toArray();
         
-        $equipments = Category::findOrFail($request->category_id)->equipments->where('status',0); // カテゴリーに属する備品一覧
-
+        // カテゴリーに属する備品一覧
+        $equipments = Category::findOrFail($request->category_id)->equipments()->where('status',0)->get();
+        
+        // 予約を検索日時分だけ取得（全3パターン）
+        // パターン1（開始時刻だけ被る）
+        $reservations_list1 = Reservation::orderBy('lending_start', 'asc')
+            ->whereDate('lending_start', $request->reserve_date)
+            ->whereTime('lending_start','<=',$request->reserve_time_start)->whereTime('lending_end','>=',$request->reserve_time_start)
+            ->whereTime('lending_end','<',$request->reserve_time_end)
+            ->get();
+            
+        // パターン2（終了時刻だけ被る）
+        $reservations_list2 = Reservation::orderBy('lending_start', 'asc')
+            ->whereDate('lending_start', $request->reserve_date)
+            ->whereTime('lending_start','>',$request->reserve_time_start)
+            ->whereTime('lending_start','<=',$request->reserve_time_end)->whereTime('lending_end','>=',$request->reserve_time_end)
+            ->get();
+            
+        // パターン3（どちらも被る）
+        $reservations_list3 = Reservation::orderBy('lending_start', 'asc')
+            ->whereDate('lending_start', $request->reserve_date)
+            ->whereTime('lending_start','<=',$request->reserve_time_start)->whereTime('lending_end','>=',$request->reserve_time_start)
+            ->whereTime('lending_start','<=',$request->reserve_time_end)->whereTime('lending_end','>=',$request->reserve_time_end)
+            ->get();
+        
+        // 1つにまとめる
+        $reservations_list = $reservations_list1->concat($reservations_list2)->concat($reservations_list3);
+        
         $count = 0;  // delete_list用(配列の何番目かを確認)
         $delete_list[] = "";
-            
-        // 貸出期間内に予約のない備品一覧を取得する
         foreach($equipments as $equipment){
-            // 貸出期間内の予約一覧を取得する
-            // 予約開始時間に被りがないか確認
-            $reservations_count = Reservation::orderBy('lending_start', 'asc')
-                ->where('equipment_id', $equipment->id)
-                ->whereDate('lending_start', $request->reserve_date)
-                ->whereTime('lending_start','>=',$request->reserve_time_start)->whereTime('lending_start','<',$request->reserve_time_end)
-                ->get();
-            if(count($reservations_count) == 0){
-                $reservations_count = Reservation::orderBy('lending_start', 'asc')
-                    ->where('equipment_id', $equipment->id)
-                    ->whereDate('lending_end', $request->reserve_date)
-                    ->whereTime('lending_end','>=',$request->reserve_time_start)->whereTime('lending_end','<',$request->reserve_time_end)
-                    ->get();
-                if(count($reservations_count) == 0){
-                    $reservations_count = Reservation::orderBy('lending_start', 'asc')
-                        ->where('equipment_id', $equipment->id)
-                        ->whereDate('lending_start', $request->reserve_date)
-                        ->whereTime('lending_start','<=',$request->reserve_time_start)->whereTime('lending_end','>=',$request->reserve_time_end)
-                        ->get(); 
-                    if(count($reservations_count) != 0) $delete_list[] = $count;
-                }else $delete_list[] = $count; 
-            }else $delete_list[] = $count;
+            // 各備品の予約有無
+            $reserved_list = $reservations_list->where('equipment_id', $equipment->id);
+            if(count($reserved_list) != 0) $delete_list[] = $count;
             $count++;
         }
-            
+        
         // 備品一覧から対象の備品を削除する
         for($i = 0; $i < count($delete_list); $i++) {
             $equipments->pull($delete_list[$i]);
         }
 
-        // 備品一覧の数が必要台数を満たす場合、OKフラグ
-        if($request->number <= count($equipments)){
-            $empty_check = 1;
-        }
-        // 満たさない場合、NGフラグ
-        else{
-            $empty_check = 2;
-        }
+        // 備品一覧の数が必要台数を満たす場合はOKフラグ。満たさない場合はNGフラグ
+        if($request->number <= count($equipments)) $empty_check = 1;
+        else $empty_check = 2;
         
         // ユーザの予約(check状態)を貸出開始日時の昇順で取得
 		$reservations_confirm = $user->reservations()->where('status',0)->orderBy('lending_start', 'asc')->get();
@@ -271,29 +304,32 @@ class ReservationsController extends Controller
         
         // 念のための空いている備品を再度取得 //
         $equipments = Category::findOrFail($request->category_id)->equipments->where('status',0);
+
+        $reservations_list1 = Reservation::orderBy('lending_start', 'asc')
+            ->whereDate('lending_start', $request->reserve_date)
+            ->whereTime('lending_start','<=',$request->reserve_time_start)->whereTime('lending_end','>=',$request->reserve_time_start)
+            ->whereTime('lending_end','<',$request->reserve_time_end)
+            ->get();
+            
+        $reservations_list2 = Reservation::orderBy('lending_start', 'asc')
+            ->whereDate('lending_start', $request->reserve_date)
+            ->whereTime('lending_start','>',$request->reserve_time_start)
+            ->whereTime('lending_start','<=',$request->reserve_time_end)->whereTime('lending_end','>=',$request->reserve_time_end)
+            ->get();
+            
+        $reservations_list3 = Reservation::orderBy('lending_start', 'asc')
+            ->whereDate('lending_start', $request->reserve_date)
+            ->whereTime('lending_start','<=',$request->reserve_time_start)->whereTime('lending_end','>=',$request->reserve_time_start)
+            ->whereTime('lending_start','<=',$request->reserve_time_end)->whereTime('lending_end','>=',$request->reserve_time_end)
+            ->get();
+        
+        $reservations_list = $reservations_list1->concat($reservations_list2)->concat($reservations_list3);
+        
         $count = 0;
         $delete_list[] = "";
         foreach($equipments as $equipment){
-            $reservations_count = Reservation::orderBy('lending_start', 'asc')
-                ->where('equipment_id', $equipment->id)
-                ->whereDate('lending_end', $request->reserve_date)
-                ->whereTime('lending_start','>=',$request->reserve_time_start)->whereTime('lending_start','<',$request->reserve_time_end)
-                ->get();
-            if(count($reservations_count) == 0){
-                $reservations_count = Reservation::orderBy('lending_start', 'asc')
-                    ->where('equipment_id', $equipment->id)
-                    ->whereDate('lending_end', $request->reserve_date)
-                    ->whereTime('lending_end','>=',$request->reserve_time_start)->whereTime('lending_end','<',$request->reserve_time_end)
-                    ->get();
-                if(count($reservations_count) == 0){
-                    $reservations_count = Reservation::orderBy('lending_start', 'asc')
-                        ->where('equipment_id', $equipment->id)
-                        ->whereDate('lending_end', $request->reserve_date)
-                        ->whereTime('lending_start','<=',$request->reserve_time_start)->whereTime('lending_end','>=',$request->reserve_time_end)
-                        ->get();
-                    if(count($reservations_count) != 0) $delete_list[] = $count; 
-                }else $delete_list[] = $count; 
-            }else $delete_list[] = $count;
+            $reserved_list = $reservations_list->where('equipment_id', $equipment->id);
+            if(count($reserved_list) != 0) $delete_list[] = $count;
             $count++;
         }
         for($i = 0; $i < count($delete_list); $i++) {
@@ -314,7 +350,6 @@ class ReservationsController extends Controller
                     $reservation_check->lending_start = $request->reserve_date. ' ' .$request->reserve_time_start;
                     $reservation_check->lending_end = $request->reserve_date. ' ' .$request->reserve_time_end;
                     $reservation_check->status = 0; // check状態
-                    //dd($reservation);
                     $reservation_check->save();
                     $count++;
                 }
@@ -378,7 +413,7 @@ class ReservationsController extends Controller
         return redirect('/reservations/create');
     }
     
-    // 全体貸出状況画面のフィルタ処理用
+    // ユーザ予約状況画面のフィルタ処理用
     public function filter_index_user(Request $request)
     {
         // 日付と時間からインスタンスを生成
@@ -416,46 +451,46 @@ class ReservationsController extends Controller
         // カテゴリー名
         $categories = Category::orderBy('name', 'asc')->paginate(10);
         
+        //// 先に予約を日時で絞り込んで、予約数を貸し出し可能数から引く
+        // 予約を検索日時分だけ取得（全3パターン）
+        // パターン1（開始時刻だけ被る）
+        $reservations_list1 = Reservation::orderBy('lending_start', 'asc')
+            ->whereDate('lending_start', $datetime->format('Y-m-d'))
+            ->whereTime('lending_start','<=',$datetime->format('H:i'))->whereTime('lending_end','>=',$datetime->format('H:i'))
+            ->whereTime('lending_end','<',$aftertime)
+            ->get();
+            
+        // パターン2（終了時刻だけ被る）
+        $reservations_list2 = Reservation::orderBy('lending_start', 'asc')
+            ->whereDate('lending_start', $datetime->format('Y-m-d'))
+            ->whereTime('lending_start','>',$datetime->format('H:i'))
+            ->whereTime('lending_start','<=',$aftertime)->whereTime('lending_end','>=',$aftertime)
+            ->get();
+            
+        // パターン3（どちらも被る）
+        $reservations_list3 = Reservation::orderBy('lending_start', 'asc')
+            ->whereDate('lending_start', $datetime->format('Y-m-d'))
+            ->whereTime('lending_start','<=',$datetime->format('H:i'))->whereTime('lending_end','>=',$datetime->format('H:i'))
+            ->whereTime('lending_start','<=',$aftertime)->whereTime('lending_end','>=',$aftertime)
+            ->get();
+        
+        // 1つにまとめる
+        $reservations_list = $reservations_list1->concat($reservations_list2)->concat($reservations_list3);
+
         // カテゴリーの備品類
         foreach($categories as $category){
-            $equipments = $category->equipments->where('status',0);
-            $count = 0; // 初期化
-            $reserved_list = [];
+            $count = [];
+            $equipments = $category->equipments()->where('status',0)->get();
             foreach($equipments as $equipment){
-                $reservations_count = Reservation::orderBy('lending_start', 'asc')
-                    ->where('equipment_id', $equipment->id)
-                    ->where('lending_start','like', $datetime->format('Y-m-d'). '%')
-                    ->whereTime('lending_start','>=',$datetime->format('H:i'))->whereTime('lending_start','<',$aftertime)
-                    ->get();
-                if(count($reservations_count) == 0){
-                    $reservations_count = Reservation::orderBy('lending_start', 'asc')
-                        ->where('equipment_id', $equipment->id)
-                        ->where('lending_end','like', $datetime->format('Y-m-d'). '%')
-                        ->whereTime('lending_end','>=',$datetime->format('H:i'))->whereTime('lending_end','<',$aftertime)
-                        ->get();
-                    if(count($reservations_count) == 0){
-                        $reservations_count = Reservation::orderBy('lending_start', 'asc')
-                            ->where('equipment_id', $equipment->id)
-                            ->where('lending_start','like', $datetime->format('Y-m-d'). '%')
-                            ->whereTime('lending_start','<=',$datetime->format('H:i'))->whereTime('lending_end','>=',$aftertime)
-                            ->get();
-                        if(count($reservations_count) != 0) $reserved_list[] = $count;
-                    }else $reserved_list[] = $count; 
-                }else $reserved_list[] = $count;
-                $count++;
+                // 各備品の予約有無
+                $reserved_list = $reservations_list->where('equipment_id', $equipment->id);
+                if(count($reserved_list) != 0) $count[] = 1;
             }
-            if($reserved_list == null){
-                $reserve_ok[] = count($equipments);
-                $reserve_ng[] = 0;
-            } 
-            else{
-                $reserve_ok[] = count($equipments) - count($reserved_list);
-                $reserve_ng[] = count($reserved_list);
-            }
+            $reserve_ok[] = count($equipments)-count($count);
+            $reserve_ng[] = count($count);
             $total[] = count($equipments);
-            
         }
-
+        
         return view('reservations.index_all', [
             'categories' => $categories,
             'reserve_oks' => $reserve_ok,
@@ -487,28 +522,31 @@ class ReservationsController extends Controller
 		    $time[] = $month[$i]. ':'. $minute[1];
 		}
 		
+        // 予約を検索日分だけ取得
+        $reservations_list = Reservation::orderBy('lending_start', 'asc')
+            ->whereDate('lending_start', $datetime->format('Y-m-d'))
+            ->get();
+		
 		// 各備品の予約時間を取得
 		$count = 0;
 		foreach($equipments as $equipment){
 		    $reserved_list[$count] = [];
 		    for($i = 0; $i < count($time)-1; $i++){
-    		    $reserved_check = Reservation::orderBy('lending_start', 'asc')
-                    ->where('equipment_id', $equipment->id)
-                    ->where('lending_start','like', $datetime->format('Y-m-d'). '%')
-                    ->whereTime('lending_start','>=',$time[$i])->whereTime('lending_start','<',$time[$i+1])
-                    ->get();
+    		    $reserved_check = $reservations_list
+    		        ->where('equipment_id', $equipment->id)
+                    ->where('lending_start','<=',$datetime->format('Y-m-d'). ' '. $time[$i]. '%')->where('lending_end','>=',$datetime->format('Y-m-d'). ' '. $time[$i]. '%')
+                    ->where('lending_start','<=',$datetime->format('Y-m-d'). ' '. $time[$i+1].'%')->where('lending_end','>=',$datetime->format('Y-m-d'). ' '. $time[$i+1].'%');
+                
                 if(count($reserved_check) == 0){
-                    $reserved_check = Reservation::orderBy('lending_start', 'asc')
+                    $reserved_check = $reservations_list
                         ->where('equipment_id', $equipment->id)
-                        ->where('lending_end','like', $datetime->format('Y-m-d'). '%')
-                        ->whereTime('lending_end','>=',$time[$i])->whereTime('lending_end','<',$time[$i+1])
-                        ->get();
+                        ->where('lending_start','>',$datetime->format('Y-m-d'). ' '. $time[$i].'%')
+                        ->where('lending_start','<=',$datetime->format('Y-m-d'). ' '. $time[$i+1].'%')->where('lending_end','>=',$datetime->format('Y-m-d'). ' '. $time[$i+1].'%');
                     if(count($reserved_check) == 0){
-                        $reserved_check = Reservation::orderBy('lending_start', 'asc')
-                        ->where('equipment_id', $equipment->id)
-                        ->where('lending_start','like', $datetime->format('Y-m-d'). '%')
-                        ->whereTime('lending_start','<=',$time[$i])->whereTime('lending_end','>=',$time[$i+1])
-                        ->get();
+                        $reserved_check = $reservations_list
+                            ->where('equipment_id', $equipment->id)
+                            ->where('lending_start','<=',$datetime->format('Y-m-d'). ' '. $time[$i].'%')->where('lending_end','>=',$datetime->format('Y-m-d'). ' '. $time[$i].'%')
+                            ->where('lending_end','<',$datetime->format('Y-m-d'). ' '. $time[$i+1].'%');
                     }
                 }
                 if(count($reserved_check) != 0) $reserved_list[$count][] = 1; 
@@ -516,7 +554,37 @@ class ReservationsController extends Controller
 		    }
             $count++;
 		}
-		
+
+// 		// 各備品の予約時間を取得
+// 		$count = 0;
+// 		foreach($equipments as $equipment){
+// 		    $reserved_list[$count] = [];
+// 		    for($i = 0; $i < count($time)-1; $i++){
+//     		    $reserved_check = Reservation::orderBy('lending_start', 'asc')
+//                     ->whereDate('lending_start', $datetime->format('Y-m-d'))
+//     		        ->where('equipment_id', $equipment->id)
+//                     ->whereTime('lending_start','<=',$time[$i])->whereTime('lending_end','>=',$time[$i])
+//                     ->whereTime('lending_start','<=',$time[$i+1])->whereTime('lending_end','>=',$time[$i+1])->get();
+//                 if(count($reserved_check) == 0){
+//                     $reserved_check = Reservation::orderBy('lending_start', 'asc')
+//                         ->whereDate('lending_start', $datetime->format('Y-m-d'))
+//                         ->where('equipment_id', $equipment->id)
+//                         ->whereTime('lending_start','>',$time[$i])
+//                         ->whereTime('lending_start','<=',$time[$i+1])->whereTime('lending_end','>=',$time[$i+1])->get();
+//                     if(count($reserved_check) == 0){
+//                         $reserved_check = Reservation::orderBy('lending_start', 'asc')
+//                             ->whereDate('lending_start', $datetime->format('Y-m-d'))
+//                             ->where('equipment_id', $equipment->id)
+//                             ->whereTime('lending_start','<=',$time[$i])->whereTime('lending_end','>=',$time[$i])
+//                             ->whereTime('lending_end','<',$time[$i+1])->get();
+//                     }
+//                 }
+//                 if(count($reserved_check) != 0) $reserved_list[$count][] = 1; 
+//                 else $reserved_list[$count][] = 0;
+// 		    }
+//             $count++;
+// 		}
+
 		return view('reservations.index_category', [
             'category' => $category,
             'equipments' => $equipments,
