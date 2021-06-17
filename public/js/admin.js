@@ -135,20 +135,6 @@ var funcCheck = function funcCheck() {
   } else {
     checkAll.checked = false;
   }
-}; // (削除ボタン)配列の値取得の機能
-
-
-var get_checked = function get_checked() {
-  // 配列を定義
-  var vals = [];
-
-  for (var i = 0; i < el.length; i++) {
-    if (el[i].checked) {
-      vals.push(el[i].id);
-    }
-  }
-
-  console.log(vals);
 }; // (削除ボタン)アクティブ化
 
 
@@ -165,16 +151,16 @@ var delete_button_disable = function delete_button_disable() {
 // (全選択チェックボックス)クリック時
 
 
-checkAll.addEventListener("click", function () {
-  funcCheckAll(checkAll.checked);
-}, false); // (通常チェックボックス)クリック時
+if (checkAll != null) {
+  checkAll.addEventListener("click", function () {
+    funcCheckAll(checkAll.checked);
+  }, false);
+} // (通常チェックボックス)クリック時
+
 
 for (var i = 0; i < el.length; i++) {
   el[i].addEventListener("click", funcCheck, false);
-} // (削除ボタン)クリック時
-
-
-delete_button.addEventListener("click", get_checked);
+}
 
 /***/ }),
 
