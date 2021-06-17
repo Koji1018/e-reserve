@@ -4,13 +4,19 @@
 
     <h1>{{ Auth::user()->name }}さんの予約状況</h1>
     
+    
     {{-- フィルタ用のフォーム --}}
     {!! Form::model($datetime,['route' => ['reservations.filter_index_user'], 'method' => 'get']) !!}
-        <div class="form-group d-flex flex-row mt-3">
+    <div class="form-group d-flex flex-row mt-3">
+        <div>
             {!! Form::date('filter_date', $datetime->format('Y-m-d'),[]) !!}
+        </div>
+        <div class="px-1">
             {!! Form::submit('更新', null) !!}
         </div>
+    </div>
     {!! Form::close() !!}
+    
     
     <hr>
     

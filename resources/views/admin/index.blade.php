@@ -5,7 +5,7 @@
     <h1>管理者一覧</h1>
     
     <div class="row mt-3">
-        <div class="col-sm-2">
+        <div class="col-3 col-md-2">
             {{-- 管理者追加ボタンのフォーム --}}
             {!! Form::open(['route' => ['admin.add'], 'method' => 'get']) !!}
                 {!! Form::submit('追加', ['class' => "btn btn-primary btn-block btn-sm"]) !!}
@@ -16,7 +16,7 @@
     <hr>
 
     @if (count($admins) > 0)
-        <table class="table table-striped">
+        <table class="table table-striped table-bordered ">
             <thead>
                 <tr>
                     <th>ユーザ名</th>

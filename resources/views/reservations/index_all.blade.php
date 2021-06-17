@@ -6,17 +6,16 @@
     
     {{-- フィルタ用のフォーム --}}
     {!! Form::model($datetime,['route' => ['reservations.filter_index_all'], 'method' => 'get']) !!}
-        <div class="form-group d-flex flex-row mt-3">
-            <div>
-                {!! Form::date('filter_date', $datetime->format('Y-m-d'),[]) !!}
-                {!! Form::time('filter_time_start', $datetime->format('H:i'),[]) !!}～
-                {!! Form::time('filter_time_end', $aftertime,[]) !!}
-                {!! Form::label('の貸出状況') !!}
-            </div>
-            <div class="px-3">
-                {!! Form::submit('更新', null) !!}
-            </div>
+    <div class="row form-group d-flex mt-3">
+        <div class="col-12 col-md-2">{!! Form::date('filter_date', $datetime->format('Y-m-d'),[]) !!}</div>
+        <div class="col-3 col-md-1">{!! Form::time('filter_time_start', $datetime->format('H:i'),[]) !!}</div>
+        <div class="pl-2">～</div>
+        <div class="col-3 col-md-1">{!! Form::time('filter_time_end', $aftertime,[]) !!}</div>
+        <div class="pl-2">{!! Form::label('の貸出状況') !!}</div>
+        <div class="col-3 px-3">
+            {!! Form::submit('更新', null) !!}
         </div>
+    </div>
     {!! Form::close() !!}
     
     <hr>

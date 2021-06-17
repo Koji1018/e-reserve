@@ -5,14 +5,14 @@
     <h1>カテゴリー一覧</h1>
     
     <div class="row mt-3">
-        <div class="col-sm-2">
+        <div class="col-4 col-md-2">
             {{-- カテゴリー追加ボタンのフォーム --}}
             {!! Form::open(['route' => ['categories.create'], 'method' => 'get']) !!}
                 {!! Form::submit('追加', ['class' => "btn btn-primary btn-block btn-sm"]) !!}
             {!! Form::close() !!}
         </div>
         
-        <div class="col-sm-2">
+        <div class="col-4 col-md-2">
             {{-- カテゴリー削除ボタンのフォーム --}}
             {!! Form::open(['route' => ['categories.delete'], 'method' => 'get', 'id' => 'deleteForm',]) !!}
                 {!! Form::submit('削除', ['class' => "btn btn-secondary btn-block btn-sm", 'id' => "delete", 'disabled']) !!}

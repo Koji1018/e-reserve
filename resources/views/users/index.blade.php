@@ -6,18 +6,17 @@
     
     <hr>
 
-    <div class="row mt-3">
-        {{-- 検索用のフォーム --}}
-        {!! Form::open(['route' => ['users.search'], 'method' => 'get']) !!}
-            <div class="form-group d-flex">
-                <div>
-                    {!! Form::text('name', null,) !!}
-                </div>
-                <div class="col-sm-9">
-                    {!! Form::submit('検索', null) !!}
-                </div>
-        {!! Form::close() !!}
+    {{-- 検索用のフォーム --}}
+    {!! Form::open(['route' => ['users.search'], 'method' => 'get']) !!}
+    <div class="form-group d-flex row mt-3">
+        <div>
+            {!! Form::text('name', null,) !!}
+        </div>
+        <div class="offset-1">
+            {!! Form::submit('検索', null) !!}
+        </div>
     </div>
+    {!! Form::close() !!}
 
     @if (count($users) > 0)
         <table class="table table-striped table-bordered">

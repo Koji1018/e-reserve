@@ -35,13 +35,11 @@
         </tbody>
     </table>
     
-    <div class="col-sm-6 offset-sm-3">
+    <div class="col-4 offset-4 offset-md-5 col-md-2">
         {{-- カテゴリー削除ボタンのフォーム --}}
         {!! Form::open(['route' => ['categories.destroy'], 'method' => 'delete', 'id' => 'destroyForm']) !!}
-        <div class="col-sm-6 offset-sm-3">
-            {!! Form::submit('削除', ['class' => "btn btn-primary btn-block btn-sm"]) !!}
-        </div>
+        {!! Form::submit('削除', ['class' => "btn btn-primary btn-block btn-sm"]) !!}
         {!! Form::close() !!}
     </div>
-
+    
 @endsection

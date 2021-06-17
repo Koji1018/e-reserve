@@ -6,7 +6,7 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-6 offset-sm-3 border border-dark py-3 px-5 mt-3">
+        <div class="col-10 offset-1 offset-md-3 col-md-6 border border-dark py-3 px-5 mt-3">
 
             {!! Form::open(['route' => 'signup.post']) !!}
                 <div class="form-group">
@@ -28,7 +28,7 @@
                     {!! Form::label('password_confirmation', 'パスワードの確認') !!}
                     {!! Form::password('password_confirmation', ['class' => 'form-control']) !!}
                 </div>
-                <div class="col-sm-6 offset-sm-3">
+                <div class="col-8 offset-2 offset-md-4 col-md-4">
                     {!! Form::submit('登録', ['class' => 'btn btn-primary btn-block']) !!}
                 </div>
             {!! Form::close() !!}

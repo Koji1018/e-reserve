@@ -5,14 +5,14 @@
     <h1>備品一覧</h1>
     
     <div class="row mt-3">
-        <div class="col-sm-2">
+        <div class="col-4 col-md-2">
             {{-- 備品追加ボタンのフォーム --}}
             {!! Form::open(['route' => ['equipments.create'], 'method' => 'get']) !!}
                 {!! Form::submit('追加', ['class' => "btn btn-primary btn-block btn-sm"]) !!}
             {!! Form::close() !!}
         </div>
         
-        <div class="col-sm-2">
+        <div class="col-4 col-md-2">
             {{-- 備品削除ボタンのフォーム --}}
             {!! Form::open(['route' => ['equipments.delete'], 'method' => 'get', 'id' => 'deleteForm',]) !!}
                 {!! Form::submit('削除', ['class' => "btn btn-secondary btn-block btn-sm", 'id' => "delete", 'disabled']) !!}
@@ -26,14 +26,14 @@
         {!! Form::open(['route' => ['equipments.search'], 'method' => 'get']) !!}
         <div class="d-flex">
             {{-- カテゴリーのフィルタ --}}
-            <div class="col-sm-6">
+            <div>
                 {!! Form::label('category', 'カテゴリー：') !!}
             </div>
-            <div class="col-sm-9">
+            <div class="col-8 col-md-4">
                 {!! Form::select('category', $category, null,) !!}
             </div>
         </div>
-        <div class="col-sm-6 d-flex">
+        <div class="d-flex">
             {{-- 検索用のフォーム --}}
             <div>
                 {!! Form::text('name', null,) !!}
